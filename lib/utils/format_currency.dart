@@ -8,5 +8,5 @@ String formatCaurrncy(int value) {
 // String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
 
 String formatDate(DateTime date) {
-  return DateFormat('yyyy-MM-dd – kk:mm').format(date);
+  return DateFormat('yyyy-MM-dd').format(date);
 }
