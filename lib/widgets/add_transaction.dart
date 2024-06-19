@@ -1,4 +1,5 @@
 import 'package:expenses_test_app/colors/colors.dart';
+import 'package:expenses_test_app/utils/format_currency.dart';
 import 'package:flutter/material.dart';
 
 class AddTransaction extends StatefulWidget {
@@ -19,12 +20,25 @@ class _AddTransactionState extends State<AddTransaction> {
   TextEditingController valueController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  bool isExpenses = true;
+
+  List typeTrans = ["income", "expense"];
+  int selectedType = 1;
   // ==================================
+
+  toggleTypeTransaction(int value) {
+    setState(() {
+      //  isExpenses = value;
+      selectedType = value;
+      //print(typeTrans[value]);
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    dateController.text = formatDate(DateTime.now());
     _selectDate();
   }
 
@@ -32,6 +46,7 @@ class _AddTransactionState extends State<AddTransaction> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(border: Border(top: BorderSide(color: kBlack))),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -47,7 +62,7 @@ class _AddTransactionState extends State<AddTransaction> {
                     //   style: TextStyle(fontSize: 16, color: kBlack),
                     // ),
                     const SizedBox(
-                      height: 10,
+                      height: 30,
                     ),
                     TextFormField(
                       style: TextStyle(color: kBlackThree.withOpacity(0.8)),
@@ -109,6 +124,7 @@ class _AddTransactionState extends State<AddTransaction> {
                       },
                       decoration: InputDecoration(
                           labelText: "Date",
+                          hintText: DateTime.now().toString(),
                           border: const OutlineInputBorder(),
                           focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: kBlack)),
@@ -119,6 +135,19 @@ class _AddTransactionState extends State<AddTransaction> {
                       onTap: () {
                         _selectDate();
                       },
+                      readOnly: true,
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      children: [
+                        tabText("Income", 0),
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        tabText("Expenses", 1),
+                      ],
                     ),
                     const SizedBox(
                       height: 15,
@@ -181,8 +210,31 @@ class _AddTransactionState extends State<AddTransaction> {
     );
     if (picked != null) {
       setState(() {
+        // print("=============================================================");
+        // print(formatDate(picked));
         dateController.text = picked.toString().split(" ")[0];
       });
     }
+  }
+
+  Widget tabText(String text, index) {
+    return InkWell(
+      onTap: () {
+        toggleTypeTransaction(index);
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: index == selectedType ? kBlack : kBlackThree.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: index == selectedType ? kWhite : kBlack,
+          ),
+        ),
+      ),
+    );
   }
 }

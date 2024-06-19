@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
               bodyColor: kWhite,
             ), //to Change the primary color of text
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
+          seedColor: Colors.blue.shade500,
         ),
         useMaterial3: false,
       ),
