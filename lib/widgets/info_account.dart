@@ -1,4 +1,5 @@
 import 'package:expenses_test_app/colors/colors.dart';
+import 'package:expenses_test_app/utils/format_currency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,7 @@ class InfoAccount extends StatefulWidget {
 
 class _InfoAccountState extends State<InfoAccount> {
   final format = NumberFormat("#,##0.00", "en_US");
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,9 +28,15 @@ class _InfoAccountState extends State<InfoAccount> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Total Balance",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                decoration: BoxDecoration(
+                    color: kWhite.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(5)),
+                child: const Text(
+                  "Total Balance",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                ),
               ),
               const SizedBox(
                 height: 10,
@@ -37,7 +45,7 @@ class _InfoAccountState extends State<InfoAccount> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    format.format(1000000),
+                    formatCaurrncy(1000000),
                     style: const TextStyle(
                         fontSize: 35, fontWeight: FontWeight.w900),
                   ),
