@@ -36,7 +36,7 @@ class _AddTransactionState extends State<AddTransaction> {
   //============================
   double currentBalance = 0;
   getCurrentBalance() {
-    late final totalBalanceSafe = widget.safe!.keys.toList();
+    final totalBalanceSafe = widget.safe!.keys.toList();
 
     if (widget.safe != null) {
       var safe = widget.safe!.get(0);
@@ -223,7 +223,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                 "note": descriptionController.text,
                               });
                               if (typeTrans[selectedType] == "income") {
-                                await widget.safe?.put(0, {
+                                await widget.safe?.put("0", {
                                   "balance": (currentBalance +
                                       double.parse(valueController.text))
                                 });

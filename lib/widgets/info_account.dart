@@ -1,4 +1,5 @@
 import 'package:expenses_test_app/colors/colors.dart';
+import 'package:expenses_test_app/models/balance.dart';
 import 'package:expenses_test_app/utils/format_currency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -46,18 +47,23 @@ class _InfoAccountState extends State<InfoAccount> {
   Widget build(BuildContext context) {
     handleTotal() async {
       late final data = widget.boxTransactions!.keys.toList();
-      late final totalBalanceSafe = widget.boxSafe!.keys.toList();
+      print("====================================");
+      print(widget.boxSafe?.get("0")["balance"]);
+      setState(() {
+        totalBalance = widget.boxSafe?.get("0")["balance"];
+      });
+      //late final totalBalanceSafe = widget.boxSafe!.keys.toList();
       // print("=========================================");
       // print(totalBalanceSafe);
 
-      if (widget.boxSafe != null && totalBalanceSafe.isNotEmpty) {
-        var safe = await widget.boxSafe!.get(0);
-        print("=========================================");
-        print(safe["balance"]);
-        setState(() {
-          totalBalance = safe["balance"];
-        });
-      }
+      // if (widget.boxSafe != null && totalBalanceSafe.isNotEmpty) {
+      //   var safe = await widget.boxSafe!.get(0);
+      //   print("=========================================");
+      //   print(safe["balance"]);
+      //   setState(() {
+      //     totalBalance = safe["balance"];
+      //   });
+      // }
 
       if (widget.boxTransactions != null && data.isNotEmpty) {
         for (var index in data) {
