@@ -34,18 +34,18 @@ class _AddTransactionState extends State<AddTransaction> {
   // ==================================
 
   //============================
-  int currentBalance = 0;
+  double currentBalance = 0;
   getCurrentBalance() {
     late final totalBalanceSafe = widget.safe!.keys.toList();
 
     if (widget.safe != null) {
-      var safe = widget.safe?.get(0);
+      var safe = widget.safe!.get(0);
       // currentBalance = safe["balance"];
       print(
           "========================current balance==========================");
       print(currentBalance);
       setState(() {
-        currentBalance = int.parse(safe["balance"]);
+        currentBalance = safe["balance"];
       });
     }
   }
