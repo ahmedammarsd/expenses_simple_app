@@ -1,4 +1,5 @@
 import 'package:expenses_test_app/colors/colors.dart';
+import 'package:expenses_test_app/models/balance.dart';
 import 'package:expenses_test_app/widgets/add_transaction.dart';
 import 'package:expenses_test_app/widgets/card_transaction.dart';
 import 'package:expenses_test_app/widgets/info_account.dart';
@@ -35,12 +36,24 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    Hive.openBox("safe_box").then((box) => {
-          setState(() {
-            safe = box;
-          })
-        });
+    Future.delayed(Duration.zero, () async {
+      final balance = await Hive.openBox("safe_box");
+      print("blallllllllllllllllllllll");
+      print(balance.get("0")["balance"]);
+      final valBalnace = balance.get("0")["balance"];
+      if (valBalnace == 0) {
+        balance.put("0", {"balance": 0});
+      }
+      setState(() {
+        safe = balance;
+      });
+    });
+    // .then((box) => {
+    //       setState(() {
+    //         box.put(0, Balance(balance: 1));
+    //         safe = box;
+    //       })
+    //     });
 
     Hive.openBox("transactions_box").then((box) => {
           setState(() {
