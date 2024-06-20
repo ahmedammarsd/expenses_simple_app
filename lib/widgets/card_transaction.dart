@@ -21,6 +21,10 @@ class CardTransaction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.only(bottom: 5),
+      decoration: BoxDecoration(
+          border:
+              Border(bottom: BorderSide(color: kBlackThree.withOpacity(0.1)))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -2,10 +2,20 @@ import 'package:expenses_test_app/colors/colors.dart';
 import 'package:expenses_test_app/utils/format_currency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
 class InfoAccount extends StatefulWidget {
-  const InfoAccount({super.key});
+  const InfoAccount(
+      {super.key,
+      required this.boxSafe,
+      required this.totalBalance,
+      required this.totalExpenses,
+      required this.totalIncome});
+  final Box? boxSafe;
+  final int totalBalance;
+  final int totalExpenses;
+  final int totalIncome;
 
   @override
   State<InfoAccount> createState() => _InfoAccountState();
@@ -14,8 +24,12 @@ class InfoAccount extends StatefulWidget {
 class _InfoAccountState extends State<InfoAccount> {
   final format = NumberFormat("#,##0.00", "en_US");
 
+  late final safeKeys = widget.boxSafe!.keys.toList();
+  late Map safe = widget.boxSafe!.get(safeKeys[0]);
   @override
   Widget build(BuildContext context) {
+    //   print("==============================================================")
+    // print(safeKeys);
     return Container(
       padding: const EdgeInsets.all(25),
       width: double.infinity,
@@ -45,7 +59,7 @@ class _InfoAccountState extends State<InfoAccount> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    formatCaurrncy(1000000),
+                    formatCaurrncy(widget.totalBalance),
                     style: const TextStyle(
                         fontSize: 35, fontWeight: FontWeight.w900),
                   ),
@@ -63,11 +77,13 @@ class _InfoAccountState extends State<InfoAccount> {
           const SizedBox(
             height: 10,
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IncomeAndExpenses(svg: "down.svg", type: "income", value: 300),
-              IncomeAndExpenses(svg: "up.svg", type: "expenses", value: 9000),
+              IncomeAndExpenses(
+                  svg: "down.svg", type: "income", value: widget.totalIncome),
+              IncomeAndExpenses(
+                  svg: "up.svg", type: "expenses", value: widget.totalExpenses),
             ],
           ),
         ],
@@ -123,4 +139,15 @@ class IncomeAndExpenses extends StatelessWidget {
       ],
     );
   }
+
+  //   Widget _buildUISafe(safe) {
+  //   if (safe == null) {
+  //     return const CircularProgressIndicator();
+  //   }
+  //   return ValueListenableBuilder(
+  //       valueListenable: safe!.listenable(),
+  //       builder: (context, box, widget) {
+  //         Map safeBox = safe.put
+  //       });
+  // }
 }
