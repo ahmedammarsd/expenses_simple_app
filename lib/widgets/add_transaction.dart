@@ -34,16 +34,21 @@ class _AddTransactionState extends State<AddTransaction> {
   // ==================================
 
   //============================
-  // int currentBalance = 0;
-  // getCurrentBalance() {
-  //   late final totalBalanceSafe = widget.safe!.keys.toList();
+  double currentBalance = 0;
+  getCurrentBalance() {
+    late final totalBalanceSafe = widget.safe!.keys.toList();
 
-  //   if (widget.safe != null && totalBalanceSafe.isNotEmpty) {
-  //     Map<String, dynamic> safe = widget.safe?.get("balance");
-  //     currentBalance = safe["balance"];
-  //     setState(() {});
-  //   }
-  // }
+    if (widget.safe != null) {
+      var safe = widget.safe!.get(0);
+      // currentBalance = safe["balance"];
+      print(
+          "========================current balance==========================");
+      print(currentBalance);
+      setState(() {
+        currentBalance = safe["balance"];
+      });
+    }
+  }
   //============================
 
   toggleTypeTransaction(int value) {
@@ -60,7 +65,7 @@ class _AddTransactionState extends State<AddTransaction> {
     super.initState();
     dateController.text = formatDate(DateTime.now());
     _selectDate();
-    // getCurrentBalance();
+    getCurrentBalance();
   }
 
   @override
@@ -217,13 +222,16 @@ class _AddTransactionState extends State<AddTransaction> {
                                 "type_transaction": typeTrans[selectedType],
                                 "note": descriptionController.text,
                               });
-                              // if (typeTrans[selectedType] == "income") {
-                              //   var val = widget.safe?.put(
-                              //       0,
-                              //       (currentBalance +
-                              //           double.parse(valueController.text)));
-                              //   print(val);
-                              // }
+                              if (typeTrans[selectedType] == "income") {
+                                await widget.safe?.put(0, {
+                                  "balance": (currentBalance +
+                                      double.parse(valueController.text))
+                                });
+                                print("========================");
+                                print(widget.safe!.get(0));
+                                //print(val);
+                                // print("========================");
+                              }
                               // if (widget.safe == null) {
                               //   widget.safe!
                               //       .add({"safe", valueController.text});
