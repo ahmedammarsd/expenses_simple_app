@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     //   });
     // }
     // initBoxs();
-    // initSafe();
+    //initSafe();
   }
 
   // initSafe() async {
@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
   //   print("=====================================");
   //   print(safe?.get(0)["balance"]);
   // }
-  //await safe?.clear();
+  //  await safe?.clear();
   //}
 
   @override
@@ -152,7 +152,8 @@ class _HomePageState extends State<HomePage> {
           return ListView.builder(
             itemCount: transactionsKeys.length,
             itemBuilder: (context, index) {
-              Map transaction = transactions!.get(transactionsKeys[index]);
+              late final Map transaction =
+                  transactions!.get(transactionsKeys[index]);
 
               return CardTransaction(
                 typeTransaction: transaction["type_transaction"] == "expense"

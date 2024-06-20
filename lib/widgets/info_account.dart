@@ -39,33 +39,35 @@ class _InfoAccountState extends State<InfoAccount> {
   //   getTransactionsBox();
   // }
 
+  int totalBalance = 0;
+  int totalExpenses = 0;
+  int totalIncome = 0;
   @override
   Widget build(BuildContext context) {
-    int totalBalance = 0;
-    int totalExpenses = 0;
-    int totalIncome = 0;
     handleTotal() async {
       late final data = widget.boxTransactions!.keys.toList();
       late final totalBalanceSafe = widget.boxSafe!.keys.toList();
-      print("=========================================");
-      print(totalBalanceSafe);
+      // print("=========================================");
+      // print(totalBalanceSafe);
 
-      // if (widget.boxSafe != null && totalBalanceSafe.isNotEmpty) {
-      //   Map<String, dynamic> safe = widget.boxSafe!.get("balance");
-      //   print("=========================================");
-      //   print(safe);
-      //   totalBalance = safe["balance"];
-      // }
+      if (widget.boxSafe != null && totalBalanceSafe.isNotEmpty) {
+        var safe = await widget.boxSafe!.get(0);
+        print("=========================================");
+        print(safe["balance"]);
+        setState(() {
+          totalBalance = safe["balance"];
+        });
+      }
 
       if (widget.boxTransactions != null && data.isNotEmpty) {
         for (var index in data) {
-          Map transaction = widget.boxTransactions!.get(index);
+          late final Map transaction = widget.boxTransactions!.get(index);
 
           if (transaction["type_transaction"] == "income") {
             totalIncome += int.parse(transaction["value"]);
-            totalBalance += int.parse(transaction["value"]);
+            // totalBalance += int.parse(transaction["value"]);
           } else {
-            totalBalance -= int.parse(transaction["value"]);
+            // totalBalance -= int.parse(transaction["value"]);
             totalExpenses += int.parse(transaction["value"]);
           }
         }
