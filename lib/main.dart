@@ -1,8 +1,18 @@
 import 'package:expenses_test_app/colors/colors.dart';
 import 'package:expenses_test_app/home.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
+void main() async {
+  // ============== Config Hive ==============
+  WidgetsFlutterBinding.ensureInitialized();
+  // it return a path to directory where aplication may place data that is user generated
+  final documentsDir = await getApplicationDocumentsDirectory();
+  Hive.init(documentsDir.path);
+
+  // ============== Config Hive ==============
+
   runApp(const MyApp());
 }
 

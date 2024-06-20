@@ -1,11 +1,17 @@
 import 'package:expenses_test_app/colors/colors.dart';
 import 'package:expenses_test_app/utils/format_currency.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class AddTransaction extends StatefulWidget {
   const AddTransaction(
-      {super.key, required this.updateControllerInHomeToClose});
+      {super.key,
+      required this.updateControllerInHomeToClose,
+      this.boxHive,
+      this.safe});
   final void Function() updateControllerInHomeToClose;
+  final Box? boxHive;
+  final Box? safe;
 
   @override
   State<AddTransaction> createState() => _AddTransactionState();
@@ -24,6 +30,7 @@ class _AddTransactionState extends State<AddTransaction> {
 
   List typeTrans = ["income", "expense"];
   int selectedType = 1;
+
   // ==================================
 
   toggleTypeTransaction(int value) {
@@ -93,7 +100,9 @@ class _AddTransactionState extends State<AddTransaction> {
                       controller: valueController,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return "Sorry The Value is Required";
+                          return "Sorry, The Value is Required";
+                        } else if (double.parse(value) < 0) {
+                          return "Sorry, The Value is Smoller Than 0 ";
                         } else {
                           return null;
                         }
@@ -117,7 +126,11 @@ class _AddTransactionState extends State<AddTransaction> {
                       controller: dateController,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return "Sorry The Date is Required";
+                          return "Sorry, The Date is Required";
+                        } else if (DateTime.parse(value).compareTo(
+                                DateTime.parse(formatDate(DateTime.now()))) >
+                            0) {
+                          return "Sorry, Can Not Select Date In Future";
                         } else {
                           return null;
                         }
@@ -181,8 +194,28 @@ class _AddTransactionState extends State<AddTransaction> {
                       children: [
                         Expanded(
                             child: ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {}
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              await widget.boxHive?.add({
+                                "title": titleController.text,
+                                "value": valueController.text,
+                                "date": dateController.text,
+                                "type_transaction": typeTrans[selectedType],
+                                "note": descriptionController.text,
+                              });
+                              if (widget.safe == null) {
+                                widget.safe!
+                                    .add({"safe", valueController.text});
+                              } else {
+                                Map valueOfSafe = widget.safe!.get(0);
+                                await widget.safe!.put(
+                                    "safe",
+                                    (double.parse(valueOfSafe["safe"]) +
+                                        double.parse(valueController.text)));
+                              }
+
+                              Navigator.pop(context);
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: kBlack,
