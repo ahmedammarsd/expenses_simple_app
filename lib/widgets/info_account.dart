@@ -1,33 +1,78 @@
 import 'package:expenses_test_app/colors/colors.dart';
 import 'package:expenses_test_app/utils/format_currency.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
 
 class InfoAccount extends StatefulWidget {
-  const InfoAccount(
-      {super.key,
-      required this.boxSafe,
-      required this.totalBalance,
-      required this.totalExpenses,
-      required this.totalIncome});
+  const InfoAccount({
+    super.key,
+    required this.boxSafe,
+    this.boxTransactions,
+  });
   final Box? boxSafe;
-  final int totalBalance;
-  final int totalExpenses;
-  final int totalIncome;
+  final Box? boxTransactions;
 
   @override
   State<InfoAccount> createState() => _InfoAccountState();
 }
 
 class _InfoAccountState extends State<InfoAccount> {
-  final format = NumberFormat("#,##0.00", "en_US");
+  // late final safeKeys = widget.boxSafe!.keys.toList();
+  // late Map safe = widget.boxSafe!.get(safeKeys[0]);
 
-  late final safeKeys = widget.boxSafe!.keys.toList();
-  late Map safe = widget.boxSafe!.get(safeKeys[0]);
+  // Box? transactionss;
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   getTransactionsBox() async {
+  //     late var transactionssInit = Hive.box("transactions_box");
+  //     setState(() {
+  //       transactionss = transactionssInit;
+  //     });
+  //   }
+
+  //   getTransactionsBox();
+  // }
+
   @override
   Widget build(BuildContext context) {
+    int totalBalance = 0;
+    int totalExpenses = 0;
+    int totalIncome = 0;
+    handleTotal() async {
+      late final data = widget.boxTransactions!.keys.toList();
+      late final totalBalanceSafe = widget.boxSafe!.keys.toList();
+      print("=========================================");
+      print(totalBalanceSafe);
+
+      // if (widget.boxSafe != null && totalBalanceSafe.isNotEmpty) {
+      //   Map<String, dynamic> safe = widget.boxSafe!.get("balance");
+      //   print("=========================================");
+      //   print(safe);
+      //   totalBalance = safe["balance"];
+      // }
+
+      if (widget.boxTransactions != null && data.isNotEmpty) {
+        for (var index in data) {
+          Map transaction = widget.boxTransactions!.get(index);
+
+          if (transaction["type_transaction"] == "income") {
+            totalIncome += int.parse(transaction["value"]);
+            totalBalance += int.parse(transaction["value"]);
+          } else {
+            totalBalance -= int.parse(transaction["value"]);
+            totalExpenses += int.parse(transaction["value"]);
+          }
+        }
+      }
+    }
+
+    handleTotal();
     //   print("==============================================================")
     // print(safeKeys);
     return Container(
@@ -59,10 +104,21 @@ class _InfoAccountState extends State<InfoAccount> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    formatCaurrncy(widget.totalBalance),
+                    formatCaurrncy(totalBalance),
                     style: const TextStyle(
                         fontSize: 35, fontWeight: FontWeight.w900),
                   ),
+                  // if (widget.boxTransactions != null)
+                  //   ValueListenableBuilder(
+                  //       valueListenable: widget.boxTransactions!.listenable(),
+                  //       builder: (context, box, widget) {
+                  //         handleTotal();
+                  //         return Text(
+                  //           formatCaurrncy(totalBalance),
+                  //           style: const TextStyle(
+                  //               fontSize: 35, fontWeight: FontWeight.w900),
+                  //         );
+                  //       }),
                   const Text("SDG")
                 ],
               ),
@@ -81,9 +137,9 @@ class _InfoAccountState extends State<InfoAccount> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IncomeAndExpenses(
-                  svg: "down.svg", type: "income", value: widget.totalIncome),
+                  svg: "down.svg", type: "income", value: totalIncome),
               IncomeAndExpenses(
-                  svg: "up.svg", type: "expenses", value: widget.totalExpenses),
+                  svg: "up.svg", type: "expenses", value: totalExpenses),
             ],
           ),
         ],
@@ -125,9 +181,14 @@ class IncomeAndExpenses extends StatelessWidget {
               const SizedBox(
                 width: 5,
               ),
-              Text(
-                type,
-                style: const TextStyle(fontSize: 13),
+              GestureDetector(
+                onTap: () {
+                  Hive.box("transactions_box").clear();
+                },
+                child: Text(
+                  type,
+                  style: const TextStyle(fontSize: 13),
+                ),
               ),
             ],
           ),

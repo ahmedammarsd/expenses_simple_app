@@ -31,13 +31,11 @@ class _HomePageState extends State<HomePage> {
   // box hive - To Store date in it
   Box? transactions;
 
-  int totalBalance = 0;
-  int totalIncome = 0;
-  int totalExpenses = 0;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
     Hive.openBox("safe_box").then((box) => {
           setState(() {
             safe = box;
@@ -49,7 +47,33 @@ class _HomePageState extends State<HomePage> {
             transactions = box;
           })
         });
+
+    // initBoxs() async {
+    //   var boxSafe = await Hive.openBox("safe_box");
+    //   setState(() {
+    //     safe = boxSafe;
+    //   });
+
+    //   var boxTransactions = await Hive.openBox("transactions_box");
+    //   setState(() {
+    //     transactions = boxTransactions;
+    //   });
+    // }
+    // initBoxs();
+    // initSafe();
   }
+
+  // initSafe() async {
+  //     if (safe == null) {
+  //      await safe?.add({"balance": 0});
+  //       print("============================");
+  //     }
+  //  else {
+  //   print("=====================================");
+  //   print(safe?.get(0)["balance"]);
+  // }
+  //await safe?.clear();
+  //}
 
   @override
   Widget build(BuildContext context) {
@@ -89,9 +113,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           InfoAccount(
             boxSafe: safe,
-            totalBalance: totalBalance,
-            totalExpenses: totalExpenses,
-            totalIncome: totalIncome,
+            boxTransactions: transactions,
           ),
           const SizedBox(
             height: 20,
@@ -114,6 +136,14 @@ class _HomePageState extends State<HomePage> {
         child: CircularProgressIndicator(),
       );
     }
+    if (transactions!.keys.toList().isEmpty) {
+      return Center(
+        child: Text(
+          "No Transactios",
+          style: TextStyle(color: kBlack),
+        ),
+      );
+    }
     return ValueListenableBuilder(
         valueListenable: transactions!.listenable(),
         builder: (context, box, widget) {
@@ -123,13 +153,7 @@ class _HomePageState extends State<HomePage> {
             itemCount: transactionsKeys.length,
             itemBuilder: (context, index) {
               Map transaction = transactions!.get(transactionsKeys[index]);
-              // if (transaction["type_transaction"] == "income") {
-              //   totalIncome += int.parse(transaction["value"]);
-              //   totalBalance += int.parse(transaction["value"]);
-              // } else {
-              //   totalBalance -= int.parse(transaction["value"]);
-              //   totalExpenses += int.parse(transaction["value"]);
-              // }
+
               return CardTransaction(
                 typeTransaction: transaction["type_transaction"] == "expense"
                     ? TypeTranscation.expense
