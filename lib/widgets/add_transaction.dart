@@ -33,6 +33,19 @@ class _AddTransactionState extends State<AddTransaction> {
 
   // ==================================
 
+  //============================
+  // int currentBalance = 0;
+  // getCurrentBalance() {
+  //   late final totalBalanceSafe = widget.safe!.keys.toList();
+
+  //   if (widget.safe != null && totalBalanceSafe.isNotEmpty) {
+  //     Map<String, dynamic> safe = widget.safe?.get("balance");
+  //     currentBalance = safe["balance"];
+  //     setState(() {});
+  //   }
+  // }
+  //============================
+
   toggleTypeTransaction(int value) {
     setState(() {
       //  isExpenses = value;
@@ -47,6 +60,7 @@ class _AddTransactionState extends State<AddTransaction> {
     super.initState();
     dateController.text = formatDate(DateTime.now());
     _selectDate();
+    // getCurrentBalance();
   }
 
   @override
@@ -203,18 +217,26 @@ class _AddTransactionState extends State<AddTransaction> {
                                 "type_transaction": typeTrans[selectedType],
                                 "note": descriptionController.text,
                               });
-                              if (widget.safe == null) {
-                                widget.safe!
-                                    .add({"safe", valueController.text});
-                              } else {
-                                Map valueOfSafe = widget.safe!.get(0);
-                                await widget.safe!.put(
-                                    "safe",
-                                    (double.parse(valueOfSafe["safe"]) +
-                                        double.parse(valueController.text)));
-                              }
+                              // if (typeTrans[selectedType] == "income") {
+                              //   var val = widget.safe?.put(
+                              //       0,
+                              //       (currentBalance +
+                              //           double.parse(valueController.text)));
+                              //   print(val);
+                              // }
+                              // if (widget.safe == null) {
+                              //   widget.safe!
+                              //       .add({"safe", valueController.text});
+                              // } else {
+                              //   Map valueOfSafe = widget.safe!.get(0);
+                              //   await widget.safe!.put(
+                              //       "safe",
+                              //       (double.parse(valueOfSafe["safe"]) +
+                              //           double.parse(valueController.text)));
+                              // }
+                              widget.updateControllerInHomeToClose();
 
-                              Navigator.pop(context);
+                              //Navigator.pop(context);
                             }
                           },
                           style: ElevatedButton.styleFrom(
