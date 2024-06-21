@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-String formatCaurrncy(int value) {
+String formatCaurrncy(var value) {
   return NumberFormat("#,##0.00", "en_US").format(value);
 }
 
