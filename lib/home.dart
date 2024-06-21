@@ -38,11 +38,13 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     Future.delayed(Duration.zero, () async {
       final balance = await Hive.openBox("safe_box");
-      print("blallllllllllllllllllllll");
-      print(balance.get("0")["balance"]);
-      final valBalnace = balance.get("0")["balance"];
-      if (valBalnace == 0) {
-        balance.put("0", {"balance": 0});
+      // print("blallllllllllllllllllllll");
+      // print(balance.get("0")["balance"]);
+      final valBalnace = balance.get("balance");
+      if (valBalnace == null) {
+        // To Check if Found The the safe balance
+        // print("================= set balance 0 =======================");
+        balance.put("balance", 0);
       }
       setState(() {
         safe = balance;

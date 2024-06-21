@@ -40,47 +40,53 @@ class _InfoAccountState extends State<InfoAccount> {
   //   getTransactionsBox();
   // }
 
-  int totalBalance = 0;
+  double totalBalance = 0;
   int totalExpenses = 0;
   int totalIncome = 0;
+  // final boxTransactionss = Future.delayed(Duration.zero, (){
+  //   return Hive.box("transactions_box");
+  //  });
+  // Future handleTotal() async {
+  //   late final data = widget.boxTransactions!.keys.toList();
+  //   print(data);
+  //   print("====================================");
+  //   // print(widget.boxSafe?.get("balance"));
+  //   double tot = await widget.boxSafe?.get("balance");
+  //   setState(() {
+  //     totalBalance = tot;
+  //   });
+  //   //late final totalBalanceSafe = widget.boxSafe!.keys.toList();
+  //   // print("=========================================");
+  //   // print(totalBalanceSafe);
+
+  //   // if (widget.boxSafe != null && totalBalanceSafe.isNotEmpty) {
+  //   //   var safe = await widget.boxSafe!.get(0);
+  //   //   print("=========================================");
+  //   //   print(safe["balance"]);
+  //   //   setState(() {
+  //   //     totalBalance = safe["balance"];
+  //   //   });
+  //   // }
+
+  //   // if (widget.boxTransactions != null && data.isNotEmpty) {
+  //   for (var index in data) {
+  //     late final Map transaction = widget.boxTransactions!.get(index);
+
+  //     if (transaction["type_transaction"] == "income") {
+  //       totalIncome += int.parse(transaction["value"]);
+  //       setState(() {});
+  //       // totalBalance += int.parse(transaction["value"]);
+  //     } else {
+  //       // totalBalance -= int.parse(transaction["value"]);
+  //       totalExpenses += int.parse(transaction["value"]);
+  //       setState(() {});
+  //     }
+  //   }
+  //   // }
+  // }
+
   @override
   Widget build(BuildContext context) {
-    handleTotal() async {
-      late final data = widget.boxTransactions!.keys.toList();
-      print("====================================");
-      print(widget.boxSafe?.get("0")["balance"]);
-      setState(() {
-        totalBalance = widget.boxSafe?.get("0")["balance"];
-      });
-      //late final totalBalanceSafe = widget.boxSafe!.keys.toList();
-      // print("=========================================");
-      // print(totalBalanceSafe);
-
-      // if (widget.boxSafe != null && totalBalanceSafe.isNotEmpty) {
-      //   var safe = await widget.boxSafe!.get(0);
-      //   print("=========================================");
-      //   print(safe["balance"]);
-      //   setState(() {
-      //     totalBalance = safe["balance"];
-      //   });
-      // }
-
-      if (widget.boxTransactions != null && data.isNotEmpty) {
-        for (var index in data) {
-          late final Map transaction = widget.boxTransactions!.get(index);
-
-          if (transaction["type_transaction"] == "income") {
-            totalIncome += int.parse(transaction["value"]);
-            // totalBalance += int.parse(transaction["value"]);
-          } else {
-            // totalBalance -= int.parse(transaction["value"]);
-            totalExpenses += int.parse(transaction["value"]);
-          }
-        }
-      }
-    }
-
-    handleTotal();
     //   print("==============================================================")
     // print(safeKeys);
     return Container(
@@ -111,11 +117,12 @@ class _InfoAccountState extends State<InfoAccount> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    formatCaurrncy(totalBalance),
-                    style: const TextStyle(
-                        fontSize: 35, fontWeight: FontWeight.w900),
-                  ),
+                  // Text(
+                  //   formatCaurrncy(totalBalance),
+                  //   style: const TextStyle(
+                  //       fontSize: 35, fontWeight: FontWeight.w900),
+                  // ),
+                  totalBalanceWidget(),
                   // if (widget.boxTransactions != null)
                   //   ValueListenableBuilder(
                   //       valueListenable: widget.boxTransactions!.listenable(),
@@ -141,18 +148,74 @@ class _InfoAccountState extends State<InfoAccount> {
           const SizedBox(
             height: 10,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IncomeAndExpenses(
-                  svg: "down.svg", type: "income", value: totalIncome),
-              IncomeAndExpenses(
-                  svg: "up.svg", type: "expenses", value: totalExpenses),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     IncomeAndExpenses(
+          //         svg: "down.svg", type: "income", value: totalIncome),
+          //     IncomeAndExpenses(
+          //         svg: "up.svg", type: "expenses", value: totalExpenses),
+          //   ],
+          // ),
+          totalIncomeAndExpenses(),
         ],
       ),
     );
+  }
+
+  Widget totalIncomeAndExpenses() {
+    int totalIncome2 = 0;
+    int totalExpenses2 = 0;
+    if (widget.boxTransactions == null) {
+      return const CircularProgressIndicator();
+    }
+    return ValueListenableBuilder(
+        valueListenable: widget.boxTransactions!.listenable(),
+        builder: (context, box, widgett) {
+          final transactionsKeys = box.keys.toList();
+          for (var index in transactionsKeys) {
+            late final Map transaction = widget.boxTransactions!.get(index);
+
+            if (transaction["type_transaction"] == "income") {
+              // totalIncome += int.parse(transaction["value"]);
+              // setState(() {
+              totalIncome2 += int.parse(transaction["value"]);
+              // });
+              // totalBalance += int.parse(transaction["value"]);
+            } else {
+              // totalBalance -= int.parse(transaction["value"]);
+              //totalExpenses += int.parse(transaction["value"]);
+              // setState(() {
+              totalExpenses2 += int.parse(transaction["value"]);
+              // });
+            }
+          }
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IncomeAndExpenses(
+                  svg: "down.svg", type: "income", value: totalIncome2),
+              IncomeAndExpenses(
+                  svg: "up.svg", type: "expenses", value: totalExpenses2),
+            ],
+          );
+        });
+  }
+
+  Widget totalBalanceWidget() {
+    if (widget.boxSafe == null) {
+      return const CircularProgressIndicator();
+    }
+    return ValueListenableBuilder(
+        valueListenable: widget.boxSafe!.listenable(),
+        builder: (context, box, widgett) {
+          var val = box.get("balance") ?? 0;
+          // print("===================== $val =============================");
+          return Text(
+            formatCaurrncy(val),
+            style: const TextStyle(fontSize: 35, fontWeight: FontWeight.w900),
+          );
+        });
   }
 }
 
@@ -190,8 +253,10 @@ class IncomeAndExpenses extends StatelessWidget {
                 width: 5,
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   Hive.box("transactions_box").clear();
+                  var box = Hive.box("safe_box");
+                  box.put("balance", 0);
                 },
                 child: Text(
                   type,
