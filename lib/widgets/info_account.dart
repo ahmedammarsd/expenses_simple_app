@@ -1,10 +1,7 @@
 import 'package:expenses_test_app/colors/colors.dart';
-import 'package:expenses_test_app/models/balance.dart';
 import 'package:expenses_test_app/utils/format_currency.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
 
@@ -43,58 +40,18 @@ class _InfoAccountState extends State<InfoAccount> {
   double totalBalance = 0;
   int totalExpenses = 0;
   int totalIncome = 0;
-  // final boxTransactionss = Future.delayed(Duration.zero, (){
-  //   return Hive.box("transactions_box");
-  //  });
-  // Future handleTotal() async {
-  //   late final data = widget.boxTransactions!.keys.toList();
-  //   print(data);
-  //   print("====================================");
-  //   // print(widget.boxSafe?.get("balance"));
-  //   double tot = await widget.boxSafe?.get("balance");
-  //   setState(() {
-  //     totalBalance = tot;
-  //   });
-  //   //late final totalBalanceSafe = widget.boxSafe!.keys.toList();
-  //   // print("=========================================");
-  //   // print(totalBalanceSafe);
-
-  //   // if (widget.boxSafe != null && totalBalanceSafe.isNotEmpty) {
-  //   //   var safe = await widget.boxSafe!.get(0);
-  //   //   print("=========================================");
-  //   //   print(safe["balance"]);
-  //   //   setState(() {
-  //   //     totalBalance = safe["balance"];
-  //   //   });
-  //   // }
-
-  //   // if (widget.boxTransactions != null && data.isNotEmpty) {
-  //   for (var index in data) {
-  //     late final Map transaction = widget.boxTransactions!.get(index);
-
-  //     if (transaction["type_transaction"] == "income") {
-  //       totalIncome += int.parse(transaction["value"]);
-  //       setState(() {});
-  //       // totalBalance += int.parse(transaction["value"]);
-  //     } else {
-  //       // totalBalance -= int.parse(transaction["value"]);
-  //       totalExpenses += int.parse(transaction["value"]);
-  //       setState(() {});
-  //     }
-  //   }
-  //   // }
-  // }
 
   @override
   Widget build(BuildContext context) {
-    //   print("==============================================================")
-    // print(safeKeys);
     return Container(
       padding: const EdgeInsets.all(25),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: kBlack,
-      ),
+          color: kBlack,
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          )),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -167,7 +124,9 @@ class _InfoAccountState extends State<InfoAccount> {
     int totalIncome2 = 0;
     int totalExpenses2 = 0;
     if (widget.boxTransactions == null) {
-      return const CircularProgressIndicator();
+      return CircularProgressIndicator(
+        color: kWhite,
+      );
     }
     return ValueListenableBuilder(
         valueListenable: widget.boxTransactions!.listenable(),
@@ -204,13 +163,15 @@ class _InfoAccountState extends State<InfoAccount> {
 
   Widget totalBalanceWidget() {
     if (widget.boxSafe == null) {
-      return const CircularProgressIndicator();
+      return CircularProgressIndicator(
+        color: kWhite,
+      );
     }
     return ValueListenableBuilder(
         valueListenable: widget.boxSafe!.listenable(),
         builder: (context, box, widgett) {
           var val = box.get("balance") ?? 0;
-          // print("===================== $val =============================");
+
           return Text(
             formatCaurrncy(val),
             style: const TextStyle(fontSize: 35, fontWeight: FontWeight.w900),
