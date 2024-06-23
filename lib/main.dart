@@ -1,5 +1,6 @@
 import 'package:expenses_test_app/colors/colors.dart';
-import 'package:expenses_test_app/home.dart';
+import 'package:expenses_test_app/screens/home.dart';
+import 'package:expenses_test_app/page_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: false,
       ),
-      home: const HomePage(),
+      home: const PageVieww(),
     );
   }
 }

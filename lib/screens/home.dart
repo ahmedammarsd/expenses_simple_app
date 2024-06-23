@@ -38,6 +38,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Box? name;
 // box hive - to Store the money
   Box? safe;
   // box hive - To Store date in it
@@ -47,6 +48,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    // Create Name Box
+    Future.delayed(Duration.zero, () async {
+      final nameBox = await Hive.openBox("name_user");
+      final getName = nameBox.get("name");
+      if (getName == null) {
+        nameBox.put("name", "no nameee");
+      }
+      setState(() {
+        name = nameBox;
+      });
+    });
 
     // Create Balance or Safe box
     Future.delayed(Duration.zero, () async {
@@ -94,11 +107,7 @@ class _HomePageState extends State<HomePage> {
       key: _key,
       appBar: AppBar(
         backgroundColor: kBlack,
-        actions: const [Icon(Icons.settings)],
-        title: const Text(
-          "Welcome, Snhoory",
-          style: TextStyle(fontSize: 13),
-        ),
+        title: welcomeUser(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => controller == null
@@ -289,7 +298,7 @@ class _HomePageState extends State<HomePage> {
               : dateController.text.isEmpty && !seeAll
                   ? transactionsFilterDate
                   : transactionsFilterSelectedDate;
-          print(transactions);
+
           return ListView.builder(
             itemCount: transactions.length,
             itemBuilder: (context, index) {
@@ -368,6 +377,23 @@ class _HomePageState extends State<HomePage> {
                 ],
               );
             },
+          );
+        });
+  }
+
+  Widget welcomeUser() {
+    if (name == null) {
+      return CircularProgressIndicator(
+        color: kWhite,
+      );
+    }
+    return ValueListenableBuilder(
+        valueListenable: name!.listenable(),
+        builder: (context, box, widget) {
+          String nameUser = box.get("name");
+          return Text(
+            "Welcome, $nameUser",
+            style: const TextStyle(fontSize: 13),
           );
         });
   }
