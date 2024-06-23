@@ -117,7 +117,7 @@ class _AddTransactionState extends State<AddTransaction> {
                         if (value!.isEmpty) {
                           return "Sorry, The Value is Required";
                         } else if (double.parse(value) < 0) {
-                          return "Sorry, The Value is Smoller Than 0 ";
+                          return "Sorry, The Value Can't be 0 or Smoller Than it";
                         } else {
                           return null;
                         }

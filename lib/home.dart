@@ -1,11 +1,12 @@
 import 'package:expenses_test_app/colors/colors.dart';
-import 'package:expenses_test_app/models/transition_model.dart';
+
 import 'package:expenses_test_app/utils/format_currency.dart';
 import 'package:expenses_test_app/widgets/add_transaction.dart';
 import 'package:expenses_test_app/widgets/card_transaction.dart';
 import 'package:expenses_test_app/widgets/info_account.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:hive_flutter/adapters.dart';
 
 class HomePage extends StatefulWidget {
@@ -68,15 +69,35 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
+  double currentBalance = 0;
+  getCurrentBalance() async {
+    var getBlan = await safe!.get("balance");
+    setState(() {
+      currentBalance = getBlan;
+    });
+  }
+
+  handleDeleteTransaction(int index, String type, int value) async {
+    await getCurrentBalance();
+    await transactions!.deleteAt(index);
+
+    if (type == "income") {
+      await safe?.put("balance", (currentBalance - value));
+    } else {
+      await safe?.put("balance", (currentBalance + value));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _key,
       appBar: AppBar(
         backgroundColor: kBlack,
+        actions: const [Icon(Icons.settings)],
         title: const Text(
           "Welcome, Snhoory",
-          style: TextStyle(fontSize: 14),
+          style: TextStyle(fontSize: 13),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -104,11 +125,22 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          if (!seeAll)
-            InfoAccount(
-              boxSafe: safe,
-              boxTransactions: transactions,
+          // if (!seeAll)
+          AnimatedScale(
+            scale: seeAll ? 0 : 1,
+            duration: const Duration(milliseconds: 1000),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              switchInCurve: Curves.easeInBack,
+              switchOutCurve: Curves.easeInOut,
+              child: !seeAll
+                  ? InfoAccount(
+                      boxSafe: safe,
+                      boxTransactions: transactions,
+                    )
+                  : null,
             ),
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -152,17 +184,6 @@ class _HomePageState extends State<HomePage> {
               child: TextFormField(
                 style: TextStyle(color: kBlackThree.withOpacity(0.8)),
                 controller: dateController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Sorry, The Date is Required";
-                  } else if (DateTime.parse(value).compareTo(
-                          DateTime.parse(formatDate(DateTime.now()))) >
-                      0) {
-                    return "Sorry, Can Not Select Date In Future";
-                  } else {
-                    return null;
-                  }
-                },
                 decoration: InputDecoration(
                     labelText: "Date",
                     hintText: DateTime.now().toString(),
@@ -177,6 +198,36 @@ class _HomePageState extends State<HomePage> {
                   _selectDate();
                 },
                 readOnly: true,
+              ),
+            ),
+          const SizedBox(
+            height: 5,
+          ),
+          if (seeAll && dateController.text.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                dateController.clear();
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: kBlackThree.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        "Clear Date",
+                        style: TextStyle(color: kBlack),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           const SizedBox(
@@ -238,7 +289,7 @@ class _HomePageState extends State<HomePage> {
               : dateController.text.isEmpty && !seeAll
                   ? transactionsFilterDate
                   : transactionsFilterSelectedDate;
-
+          print(transactions);
           return ListView.builder(
             itemCount: transactions.length,
             itemBuilder: (context, index) {
@@ -258,6 +309,41 @@ class _HomePageState extends State<HomePage> {
                   //   ),
                   //====================== With List ==========================
                   CardTransaction(
+                    onDoubleTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                "Delete Transaction",
+                                style: TextStyle(color: kBlack),
+                              ),
+                              content: Text(
+                                "Are You Sure want to delete : ${transactions[index]["title"]} ?",
+                                style: TextStyle(color: kBlack),
+                              ),
+                              actions: [
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5, horizontal: 15),
+                                        backgroundColor: Colors.red.shade500),
+                                    onPressed: () {
+                                      handleDeleteTransaction(
+                                          index,
+                                          transactions[index]
+                                              ["type_transaction"],
+                                          int.parse(
+                                              transactions[index]["value"]));
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text(
+                                      "Delete",
+                                    ))
+                              ],
+                            );
+                          });
+                    },
                     typeTransaction:
                         transactions[index]["type_transaction"] == "expense"
                             ? TypeTranscation.expense
