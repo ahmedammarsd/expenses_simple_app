@@ -213,16 +213,9 @@ class IncomeAndExpenses extends StatelessWidget {
               const SizedBox(
                 width: 5,
               ),
-              GestureDetector(
-                onTap: () async {
-                  Hive.box("transactions_box").clear();
-                  var box = Hive.box("safe_box");
-                  box.put("balance", 0);
-                },
-                child: Text(
-                  type,
-                  style: const TextStyle(fontSize: 13),
-                ),
+              Text(
+                type,
+                style: const TextStyle(fontSize: 13),
               ),
             ],
           ),

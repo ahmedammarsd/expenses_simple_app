@@ -18,10 +18,11 @@ class ItemSettings extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
         decoration: BoxDecoration(
-          color: kWhiteTwo.withOpacity(0.3),
+          color: kWhiteTwo.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(5),
           border: Border(
             bottom: BorderSide(
-              color: kBlack.withOpacity(0.2),
+              color: kBlackThree.withOpacity(0.1),
             ),
           ),
         ),
