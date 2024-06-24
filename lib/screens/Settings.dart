@@ -25,11 +25,18 @@ class _SettingsState extends State<Settings> {
     await nameBox.put("name", newName);
   }
 
+  handleClearData() {
+    Hive.box("transactions_box").clear();
+    var box = Hive.box("safe_box");
+    box.put("balance", 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kBlack,
+        elevation: 0,
         title: const Text(
           "Settings",
           style: TextStyle(fontSize: 13),
@@ -59,7 +66,9 @@ class _SettingsState extends State<Settings> {
                 color: Colors.red.shade500,
               ),
               title: "Clear Transactions Data",
-              onTap: () {},
+              onTap: () {
+                showDialog(context: context, builder: (context) => clearData());
+              },
             ),
           ],
         ),
@@ -81,6 +90,8 @@ class _SettingsState extends State<Settings> {
           validator: (value) {
             if (value!.isEmpty) {
               return "Name is Required";
+            } else if (value.length <= 2) {
+              return "Name is Not Valid";
             } else {
               return null;
             }
@@ -104,11 +115,49 @@ class _SettingsState extends State<Settings> {
                       ),
                       backgroundColor: Colors.green.shade500),
                   onPressed: () {
-                    updateName(nameUserController.text);
-                    Navigator.of(context).pop();
+                    if (_formKey.currentState!.validate()) {
+                      updateName(nameUserController.text);
+                      Navigator.of(context).pop();
+                    }
                   },
                   child: const Text(
                     "Update",
+                  )),
+            ),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget clearData() {
+    return AlertDialog(
+      title: Text(
+        "Clear Data",
+        style: TextStyle(color: kBlack),
+      ),
+      content: Text(
+        "Are You Sure To Delete Or Clear All Data ?",
+        style: TextStyle(
+          color: kBlack,
+        ),
+      ),
+      actions: [
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                      ),
+                      backgroundColor: Colors.red.shade500),
+                  onPressed: () {
+                    handleClearData();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    "Confirm Delete",
                   )),
             ),
           ],

@@ -1,5 +1,4 @@
 import 'package:expenses_test_app/colors/colors.dart';
-import 'package:expenses_test_app/screens/home.dart';
 import 'package:expenses_test_app/page_view.dart';
 
 import 'package:flutter/material.dart';
