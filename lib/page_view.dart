@@ -1,4 +1,4 @@
-import 'package:expenses_test_app/screens/Settings.dart';
+import 'package:expenses_test_app/screens/settings.dart';
 import 'package:expenses_test_app/screens/home.dart';
 
 import 'package:flutter/material.dart';

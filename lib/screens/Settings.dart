@@ -2,6 +2,7 @@ import 'package:expenses_test_app/colors/colors.dart';
 import 'package:expenses_test_app/widgets/items_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hive/hive.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -10,9 +11,20 @@ class Settings extends StatefulWidget {
   State<Settings> createState() => _SettingsState();
 }
 
-TextEditingController nameUser = TextEditingController();
-
 class _SettingsState extends State<Settings> {
+  final _formKey = GlobalKey<FormState>();
+  AutovalidateMode autovalidateMode =
+      AutovalidateMode.always; // to Work Validation like OnChange
+  TextEditingController nameUserController = TextEditingController();
+
+// ====== Get Box Name =============
+  final nameBox = Hive.box("name_user");
+// ====== Get Box Name =============
+
+  updateName(String newName) async {
+    await nameBox.put("name", newName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,14 +69,28 @@ class _SettingsState extends State<Settings> {
 
   Widget updateNameUser() {
     return AlertDialog(
-      content: TextField(
-        style: TextStyle(color: kBlackThree.withOpacity(0.8)),
-        controller: nameUser,
-        decoration: InputDecoration(
-          labelText: "Name",
-          border: const OutlineInputBorder(),
-          focusedBorder:
-              OutlineInputBorder(borderSide: BorderSide(color: kBlack)),
+      title: Text(
+        "Change Name",
+        style: TextStyle(color: kBlack),
+      ),
+      content: Form(
+        key: _formKey,
+        child: TextFormField(
+          style: TextStyle(color: kBlackThree.withOpacity(0.8)),
+          controller: nameUserController,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return "Name is Required";
+            } else {
+              return null;
+            }
+          },
+          decoration: InputDecoration(
+            labelText: "Name",
+            border: const OutlineInputBorder(),
+            focusedBorder:
+                OutlineInputBorder(borderSide: BorderSide(color: kBlack)),
+          ),
         ),
       ),
       actions: [
@@ -74,9 +100,11 @@ class _SettingsState extends State<Settings> {
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 15),
+                        vertical: 12,
+                      ),
                       backgroundColor: Colors.green.shade500),
                   onPressed: () {
+                    updateName(nameUserController.text);
                     Navigator.of(context).pop();
                   },
                   child: const Text(
