@@ -39,6 +39,15 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.3
+  flutter_native_splash: ^2.4.0
+
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+
+  background_image: "assets/black_background.jpg"
+  image: "assets/logo-png.png"
 
 dev_dependencies:
   flutter_test:
