@@ -1,7 +1,6 @@
 import 'package:expenses_test_app/colors/colors.dart';
 import 'package:expenses_test_app/widgets/items_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 
 class Settings extends StatefulWidget {
