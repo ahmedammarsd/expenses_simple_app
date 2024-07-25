@@ -44,6 +44,9 @@ class _HomePageState extends State<HomePage> {
   // box hive - To Store date in it
   Box? transactions;
 
+  // box hive - ID
+  Box? id;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -80,6 +83,18 @@ class _HomePageState extends State<HomePage> {
             transactions = box;
           })
         });
+
+    // Create Id Box
+    Future.delayed(Duration.zero, () async {
+      final idBox = await Hive.openBox("id");
+      final getId = idBox.get(id);
+      if (getId == null) {
+        idBox.put("id", 1);
+      }
+      setState(() {
+        id = idBox;
+      });
+    });
   }
 
   double currentBalance = 0;
@@ -91,8 +106,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   handleDeleteTransaction(int index, String type, int value) async {
+    // final gitIndexTransactionById = await box
+    //                                       .values
+    //                                       .toList()
+    //                                       .indexWhere((element) =>
+    //                                           element["id"] ==
+    //                                           transactions[index]["id"]);
+    //                                   print(gitIndexTransactionById);
+    final gitIndexTransactionById = await transactions!.values
+        .toList()
+        .indexWhere((element) => element["id"] == index);
+
     await getCurrentBalance();
-    await transactions!.deleteAt(index);
+    await transactions!.deleteAt(gitIndexTransactionById);
 
     if (type == "income") {
       await safe?.put("balance", (currentBalance - value));
@@ -273,7 +299,14 @@ class _HomePageState extends State<HomePage> {
         valueListenable: transactions!.listenable(),
         builder: (context, box, widget) {
           // final transactionsKeys = box.keys.toList();
+          // print(transactionsKeys);
           final transactionsAll = box.values.toList();
+          print(transactionsAll);
+
+          // print(transactionsAll.indexOf((element) =>
+          //     DateTime.parse(element["date"])
+          //         .compareTo(DateTime.parse(formatDate(DateTime.now()))) ==
+          //     0));
           final transactionsFilterDate = box.values.where((element) {
             // print(element["date"]);
             // return element;
@@ -302,7 +335,9 @@ class _HomePageState extends State<HomePage> {
           return ListView.builder(
             itemCount: transactions.length,
             itemBuilder: (context, index) {
-              //late final Map transaction = box.get(transactionsKeys[index]);
+              // late final Map transaction = box.get(transactionsKeys[index]);
+
+              // print(transaction);
               //if ( DateTime.parse(formatDate(transaction["date"])).compareTo(formatDate(DateTime.now()) == 0) )
 
               return Column(
@@ -337,9 +372,16 @@ class _HomePageState extends State<HomePage> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 5, horizontal: 15),
                                         backgroundColor: Colors.red.shade500),
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      // final gitIndexTransactionById = await box
+                                      //     .values
+                                      //     .toList()
+                                      //     .indexWhere((element) =>
+                                      //         element["id"] ==
+                                      //         transactions[index]["id"]);
+                                      // print(gitIndexTransactionById);
                                       handleDeleteTransaction(
-                                          index,
+                                          transactions[index]["id"],
                                           transactions[index]
                                               ["type_transaction"],
                                           int.parse(
