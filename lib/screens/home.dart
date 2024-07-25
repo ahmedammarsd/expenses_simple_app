@@ -1,3 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'dart:typed_data';
+
+import 'package:csv/csv.dart';
 import 'package:expenses_test_app/colors/colors.dart';
 
 import 'package:expenses_test_app/utils/format_currency.dart';
@@ -87,7 +93,7 @@ class _HomePageState extends State<HomePage> {
     // Create Id Box
     Future.delayed(Duration.zero, () async {
       final idBox = await Hive.openBox("id");
-      final getId = idBox.get(id);
+      final getId = idBox.get("id");
       if (getId == null) {
         idBox.put("id", 1);
       }
@@ -126,6 +132,20 @@ class _HomePageState extends State<HomePage> {
       await safe?.put("balance", (currentBalance + value));
     }
   }
+
+  // Future<bool> requestPermissions() async {
+  //   var status = await Permission.storage.status;
+  //   if (!status.isGranted) {
+  //     var result = await Permission.storage.request();
+  //     return result.isGranted;
+  //   }
+  //   return true;
+  // }
+
+  String? csvFile;
+  final transactionsArrayForConvertCsv = [
+    ["Title", "Value", "Date", "Type Transaction", "description"],
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -301,7 +321,6 @@ class _HomePageState extends State<HomePage> {
           // final transactionsKeys = box.keys.toList();
           // print(transactionsKeys);
           final transactionsAll = box.values.toList();
-          print(transactionsAll);
 
           // print(transactionsAll.indexOf((element) =>
           //     DateTime.parse(element["date"])
@@ -331,94 +350,186 @@ class _HomePageState extends State<HomePage> {
               : dateController.text.isEmpty && !seeAll
                   ? transactionsFilterDate
                   : transactionsFilterSelectedDate;
+          transactionsArrayForConvertCsv.removeRange(
+              1, transactionsArrayForConvertCsv.length);
+          for (int i = 0; i < transactions.length; i++) {
+            /// ============== Add to Csv file ===================
+            transactionsArrayForConvertCsv.add([
+              transactions[i]["title"],
+              transactions[i]["value"],
+              transactions[i]["date"],
+              transactions[i]["type_transaction"],
+              transactions[i]["note"]
+            ]);
 
-          return ListView.builder(
-            itemCount: transactions.length,
-            itemBuilder: (context, index) {
-              // late final Map transaction = box.get(transactionsKeys[index]);
+            /// ============== Add to Csv file ===================
+          }
 
-              // print(transaction);
-              //if ( DateTime.parse(formatDate(transaction["date"])).compareTo(formatDate(DateTime.now()) == 0) )
+          return Column(
+            children: [
+              Expanded(
+                flex: 1,
+                child: ListView.builder(
+                  itemCount: transactions.length,
+                  itemBuilder: (context, index) {
+                    // late final Map transaction = box.get(transactionsKeys[index]);
 
-              return Column(
-                children: [
-                  // if (DateTime.parse(transactions[index - (index == 0 ? 0 : 1)]
-                  //             ["date"])
-                  //         .compareTo(
-                  //             DateTime.parse(transactions[index]["date"])) ==
-                  //     1)
-                  //   Text(
-                  //     transactions[index]["date"],
-                  //     style: TextStyle(color: kBlack),
-                  //   ),
-                  //====================== With List ==========================
-                  CardTransaction(
-                    onDoubleTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text(
-                                "Delete Transaction",
-                                style: TextStyle(color: kBlack),
-                              ),
-                              content: Text(
-                                "Are You Sure want to delete : ${transactions[index]["title"]} ?",
-                                style: TextStyle(color: kBlack),
-                              ),
-                              actions: [
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 15),
-                                        backgroundColor: Colors.red.shade500),
-                                    onPressed: () async {
-                                      // final gitIndexTransactionById = await box
-                                      //     .values
-                                      //     .toList()
-                                      //     .indexWhere((element) =>
-                                      //         element["id"] ==
-                                      //         transactions[index]["id"]);
-                                      // print(gitIndexTransactionById);
-                                      handleDeleteTransaction(
-                                          transactions[index]["id"],
-                                          transactions[index]
-                                              ["type_transaction"],
-                                          int.parse(
-                                              transactions[index]["value"]));
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text(
-                                      "Delete",
-                                    ))
-                              ],
-                            );
-                          });
-                    },
-                    typeTransaction:
-                        transactions[index]["type_transaction"] == "expense"
-                            ? TypeTranscation.expense
-                            : TypeTranscation.income,
-                    title: transactions[index]["title"],
-                    value: int.parse(transactions[index]["value"]),
-                    date: DateTime.parse(transactions[index]["date"]),
-                    description: transactions[index]["note"],
-                  ),
+                    // print(transaction);
+                    //if ( DateTime.parse(formatDate(transaction["date"])).compareTo(formatDate(DateTime.now()) == 0) )
 
-                  //========================= With MAP ===========================================
-                  // CardTransaction(
-                  //   typeTransaction:
-                  //       transaction["type_transaction"] == "expense"
-                  //           ? TypeTranscation.expense
-                  //           : TypeTranscation.income,
-                  //   title: transaction["title"],
-                  //   value: int.parse(transaction["value"]),
-                  //   date: DateTime.parse(transaction["date"]),
-                  //   description: transaction["note"],
-                  // ),
-                ],
-              );
-            },
+                    return Column(
+                      children: [
+                        // if (DateTime.parse(transactions[index - (index == 0 ? 0 : 1)]
+                        //             ["date"])
+                        //         .compareTo(
+                        //             DateTime.parse(transactions[index]["date"])) ==
+                        //     1)
+                        //   Text(
+                        //     transactions[index]["date"],
+                        //     style: TextStyle(color: kBlack),
+                        //   ),
+                        //====================== With List ==========================
+                        CardTransaction(
+                          onDoubleTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                      "Delete Transaction",
+                                      style: TextStyle(color: kBlack),
+                                    ),
+                                    content: Text(
+                                      "Are You Sure want to delete : ${transactions[index]["title"]} ?",
+                                      style: TextStyle(color: kBlack),
+                                    ),
+                                    actions: [
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 5,
+                                                      horizontal: 15),
+                                              backgroundColor:
+                                                  Colors.red.shade500),
+                                          onPressed: () async {
+                                            // final gitIndexTransactionById = await box
+                                            //     .values
+                                            //     .toList()
+                                            //     .indexWhere((element) =>
+                                            //         element["id"] ==
+                                            //         transactions[index]["id"]);
+                                            // print(gitIndexTransactionById);
+                                            handleDeleteTransaction(
+                                                transactions[index]["id"],
+                                                transactions[index]
+                                                    ["type_transaction"],
+                                                int.parse(transactions[index]
+                                                    ["value"]));
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text(
+                                            "Delete",
+                                          ))
+                                    ],
+                                  );
+                                });
+                          },
+                          typeTransaction: transactions[index]
+                                      ["type_transaction"] ==
+                                  "expense"
+                              ? TypeTranscation.expense
+                              : TypeTranscation.income,
+                          title: transactions[index]["title"],
+                          value: int.parse(transactions[index]["value"]),
+                          date: DateTime.parse(transactions[index]["date"]),
+                          description: transactions[index]["note"],
+                        ),
+
+                        //========================= With MAP ===========================================
+                        // CardTransaction(
+                        //   typeTransaction:
+                        //       transaction["type_transaction"] == "expense"
+                        //           ? TypeTranscation.expense
+                        //           : TypeTranscation.income,
+                        //   title: transaction["title"],
+                        //   value: int.parse(transaction["value"]),
+                        //   date: DateTime.parse(transaction["date"]),
+                        //   description: transaction["note"],
+                        // ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              if (seeAll)
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            //  print("===========loading==========");
+
+                            try {
+                              String csv = const ListToCsvConverter()
+                                  .convert(transactionsArrayForConvertCsv);
+                              Uint8List bytes =
+                                  Uint8List.fromList(utf8.encode(csv));
+
+                              var path =
+                                  "/storage/emulated/0/Download/expenses-${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}.csv";
+                              var file = File(path);
+                              file.writeAsBytes(bytes);
+                              // // Get the directory to save the file
+                              // final directory =
+                              //     await getExternalStorageDirectory();
+                              // final path = directory?.path ?? '';
+                              // final filePath = '$path/sample_data.csv';
+
+                              // // Write CSV data to file
+                              // final file = File(filePath);
+                              // await file.writeAsString(csv);
+
+                              // print('CSV file saved at $filePath');
+
+                              // ========== Not Working ===============
+                              //This will download the file on the device.
+                              // await FileSaver.instance.saveFile(
+                              //   name:
+                              //       'file_test', // you can give the CSV file name here.
+                              //   bytes: bytes,
+                              //   ext: 'csv',
+                              //   mimeType: MimeType.csv,
+                              // );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text("Download Successfully"),
+                                backgroundColor: Colors.green.shade500,
+                                padding: const EdgeInsets.all(20),
+                              ));
+                            } catch (e) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                    "Sorry,Error in Download -Please Call To Developer"),
+                                backgroundColor: Colors.red.shade500,
+                                padding: const EdgeInsets.all(20),
+                              ));
+                              print(e);
+                            }
+                            //  print("===========loading Finish==========");
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: kBlack,
+                              padding: const EdgeInsets.all(15)),
+                          child: Text("Export & Download To Csv")),
+                    ),
+                  ],
+                ),
+              SizedBox(
+                height: 80,
+              ),
+            ],
           );
         });
   }
