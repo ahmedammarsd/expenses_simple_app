@@ -2,6 +2,7 @@ import 'package:expenses_test_app/colors/colors.dart';
 import 'package:expenses_test_app/utils/format_currency.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class AddTransaction extends StatefulWidget {
   const AddTransaction(
@@ -32,6 +33,12 @@ class _AddTransactionState extends State<AddTransaction> {
   int selectedType = 1;
 
   // ==================================
+
+  // ====== Get Box Name =============
+  Box id = Hive.box("id");
+  late int getId = id.get("id");
+
+// ====== Get Box Name =============
 
   //============================
   double currentBalance = 0;
@@ -212,6 +219,7 @@ class _AddTransactionState extends State<AddTransaction> {
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               await widget.boxHive?.add({
+                                "id": getId,
                                 "title": titleController.text,
                                 "value": valueController.text,
                                 "date": dateController.text,
@@ -244,6 +252,7 @@ class _AddTransactionState extends State<AddTransaction> {
                               //           double.parse(valueController.text)));
                               // }
                               widget.updateControllerInHomeToClose();
+                              id.put("id", (getId + 1));
 
                               //Navigator.pop(context);
                             }
