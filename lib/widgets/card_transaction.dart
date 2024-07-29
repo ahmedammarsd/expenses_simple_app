@@ -12,17 +12,20 @@ class CardTransaction extends StatelessWidget {
     required this.value,
     required this.date,
     required this.onDoubleTap,
+    required this.onTap,
   });
   final TypeTranscation typeTransaction;
   final String title;
   final String? description;
   final int value;
   final DateTime date;
+  final void Function() onTap;
   final void Function() onDoubleTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: onTap,
       onDoubleTap: onDoubleTap,
       child: Container(
         padding: const EdgeInsets.all(8),
@@ -33,50 +36,57 @@ class CardTransaction extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: kWhiteThree.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(5)),
-                  child: SvgPicture.asset(
-                    typeTransaction == TypeTranscation.expense
-                        ? "assets/icons/up.svg"
-                        : "assets/icons/down.svg",
-                    width: 20,
-                    height: 20,
-                    color: typeTransaction == TypeTranscation.expense
-                        ? Colors.red.shade500
-                        : Colors.green.shade500,
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color: kWhiteThree.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: SvgPicture.asset(
+                      typeTransaction == TypeTranscation.expense
+                          ? "assets/icons/up.svg"
+                          : "assets/icons/down.svg",
+                      width: 20,
+                      height: 20,
+                      color: typeTransaction == TypeTranscation.expense
+                          ? Colors.red.shade500
+                          : Colors.green.shade500,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: kBlack),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: kBlack,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          description!,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: kBlackTwo.withOpacity(0.8),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )
+                      ],
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      description!,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: kBlackTwo.withOpacity(0.8),
-                      ),
-                    )
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -90,6 +100,7 @@ class CardTransaction extends StatelessWidget {
                     color: typeTransaction == TypeTranscation.expense
                         ? Colors.red.shade500
                         : Colors.green.shade500,
+                    overflow: TextOverflow.clip,
                   ),
                 ),
                 const SizedBox(
