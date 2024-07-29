@@ -12,6 +12,7 @@ import 'package:expenses_test_app/widgets/card_transaction.dart';
 import 'package:expenses_test_app/widgets/info_account.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:hive_flutter/adapters.dart';
 
@@ -390,6 +391,102 @@ class _HomePageState extends State<HomePage> {
                         //   ),
                         //====================== With List ==========================
                         CardTransaction(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                      "Information Transaction",
+                                      style: TextStyle(
+                                          color: kBlack,
+                                          fontWeight: FontWeight.w800),
+                                    ),
+                                    content: Container(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Title: ${transactions[index]["title"]}",
+                                            style: TextStyle(
+                                                color: kBlack,
+                                                fontWeight: FontWeight.w700),
+                                          ),
+                                          Text(
+                                            "Date: ${transactions[index]["date"]}",
+                                            style: TextStyle(
+                                                color: kBlack,
+                                                fontWeight: FontWeight.w800),
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Expanded(
+                                            flex: 0,
+                                            child: Row(
+                                              children: [
+                                                SvgPicture.asset(
+                                                  transactions[index][
+                                                              "type_transaction"] ==
+                                                          "expense"
+                                                      ? "assets/icons/up.svg"
+                                                      : "assets/icons/down.svg",
+                                                  width: 20,
+                                                  height: 20,
+                                                  color: transactions[index][
+                                                              "type_transaction"] ==
+                                                          "expense"
+                                                      ? Colors.red.shade500
+                                                      : Colors.green.shade500,
+                                                ),
+                                                // Text(
+                                                //   "${transactions[index]["type_transaction"]}",
+                                                //   style: TextStyle(
+                                                //       color: kBlack),
+                                                // ),
+                                                Text(
+                                                  formatCaurrncy(int.parse(
+                                                      transactions[index]
+                                                          ["value"])),
+                                                  style: TextStyle(
+                                                    color: transactions[index][
+                                                                "type_transaction"] ==
+                                                            "expense"
+                                                        ? Colors.red.shade500
+                                                        : Colors.green.shade500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Text(
+                                            "Description: ${transactions[index]["note"]}",
+                                            style: TextStyle(color: kBlack),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5, horizontal: 15),
+                                            backgroundColor:
+                                                Colors.red.shade500),
+                                        child: Text("Back"),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          },
                           onDoubleTap: () {
                             showDialog(
                                 context: context,

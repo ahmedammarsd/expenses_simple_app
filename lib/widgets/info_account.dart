@@ -58,41 +58,48 @@ class _InfoAccountState extends State<InfoAccount> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                decoration: BoxDecoration(
-                    color: kWhite.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(5)),
-                child: const Text(
-                  "Total Balance",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              Expanded(
+                flex: 0,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                  decoration: BoxDecoration(
+                      color: kWhite.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: const Text(
+                    "Total Balance",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // Text(
-                  //   formatCaurrncy(totalBalance),
-                  //   style: const TextStyle(
-                  //       fontSize: 35, fontWeight: FontWeight.w900),
-                  // ),
-                  totalBalanceWidget(),
-                  // if (widget.boxTransactions != null)
-                  //   ValueListenableBuilder(
-                  //       valueListenable: widget.boxTransactions!.listenable(),
-                  //       builder: (context, box, widget) {
-                  //         handleTotal();
-                  //         return Text(
-                  //           formatCaurrncy(totalBalance),
-                  //           style: const TextStyle(
-                  //               fontSize: 35, fontWeight: FontWeight.w900),
-                  //         );
-                  //       }),
-                  const Text("SDG")
-                ],
+              Expanded(
+                flex: 0,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Text(
+                    //   formatCaurrncy(totalBalance),
+                    //   style: const TextStyle(
+                    //       fontSize: 35, fontWeight: FontWeight.w900),
+                    // ),
+                    totalBalanceWidget(),
+                    // if (widget.boxTransactions != null)
+                    //   ValueListenableBuilder(
+                    //       valueListenable: widget.boxTransactions!.listenable(),
+                    //       builder: (context, box, widget) {
+                    //         handleTotal();
+                    //         return Text(
+                    //           formatCaurrncy(totalBalance),
+                    //           style: const TextStyle(
+                    //               fontSize: 35, fontWeight: FontWeight.w900),
+                    //         );
+                    //       }),
+                    const Text("SDG")
+                  ],
+                ),
               ),
             ],
           ),
@@ -149,14 +156,21 @@ class _InfoAccountState extends State<InfoAccount> {
               // });
             }
           }
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IncomeAndExpenses(
-                  svg: "down.svg", type: "income", value: totalIncome2),
-              IncomeAndExpenses(
-                  svg: "up.svg", type: "expenses", value: totalExpenses2),
-            ],
+          return SizedBox(
+            width: double.infinity,
+            child: Wrap(
+              runSpacing: 15,
+              spacing: 15,
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              runAlignment: WrapAlignment.center,
+              children: [
+                IncomeAndExpenses(
+                    svg: "down.svg", type: "income", value: totalIncome2),
+                IncomeAndExpenses(
+                    svg: "up.svg", type: "expenses", value: totalExpenses2),
+              ],
+            ),
           );
         });
   }
@@ -172,9 +186,14 @@ class _InfoAccountState extends State<InfoAccount> {
         builder: (context, box, widgett) {
           var val = box.get("balance") ?? 0;
 
-          return Text(
-            formatCaurrncy(val),
-            style: const TextStyle(fontSize: 35, fontWeight: FontWeight.w900),
+          return Flexible(
+            child: Text(
+              formatCaurrncy(val),
+              style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           );
         });
   }
@@ -197,6 +216,7 @@ class IncomeAndExpenses extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
+          width: 100,
           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           decoration: BoxDecoration(
               color: kWhiteThree.withOpacity(.3),
@@ -214,11 +234,16 @@ class IncomeAndExpenses extends StatelessWidget {
                 width: 5,
               ),
               Text(
-                type,
-                style: const TextStyle(fontSize: 13),
+                "${type[0].toUpperCase()}${type.substring(1).toLowerCase()}",
+                style: const TextStyle(
+                  fontSize: 12,
+                ),
               ),
             ],
           ),
+        ),
+        SizedBox(
+          height: 5,
         ),
         Text(
           format.format(value),
